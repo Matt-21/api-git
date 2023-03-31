@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Github</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <!-- Bootstrap CSS -->
+  <link href="/scripts/bootstrap.min.css" rel="stylesheet">
+  <script type="text/javascript" src="/scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="/scripts/bootstrap.min.js"></script>
+</head>
+
+<body style="height: 66rem;">
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">Github</span>
+    </div>
+  </nav>
+  <div class="alert alert-danger" role="alert"
+    style="display: none;width: 759px;position: absolute;top: 4px;left: 1142px;z-index: 9999;">
+    <h4 class="alert-heading">Danger!</h4>
+    <p>Não é permitido espaços em branco. Por favor, insira um nome válido!.</p>
+    <hr>
+    <p class="mb-0">Escreva o nome de um Perfil Github.</p>
+  </div>
+  <div class="alert alert-warning" role="alert"
+    style="display: none;width: 759px;position: absolute;top: 4px;left: 1142px;z-index: 9999;">
+    <h4 class="alert-heading">Warning!</h4>
+    <p>Perfil e repositório não encontrado. Por favor, insira outro nome!</p>
+    <hr>
+    <p class="mb-0">Escreva o nome de um Perfil Github.</p>
+  </div>
+  <div class="container" style="margin-top:30px;">
+    <!-- Content here -->
+    <div class="card card-body">
+      <h2>Buscar repositórios do Github</h2>
+      <div class="row" style="margin-top:15px;">
+        <div class="col-sm-8">
+          <input id="search" class="form-control" type="text" placeholder="Digite o nome de um perfil do github"
+            aria-label="default input example">
+        </div>
+        <div class="col-sm-4">
+          <input id="search-repository" class="form-control" type="text"
+            placeholder="Digite o nome de um repositório do github" aria-label="default input example">
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px;">
+        <div class="col-sm">
+          <input id="quantidade" class="form-control" type="number" placeholder="Quantidade de repositórios filtrados"
+            aria-label="default input example" value="5">
+        </div>
+        <div class="col-sm">
+          <div class="form-check">
+            <input value="created_at" class="form-check-input" type="radio" name="flexRadioDefault" id="created_at"
+              checked>
+            <label class="form-check-label" for="created_at">
+              created_at
+            </label>
+          </div>
+          <div class="form-check">
+            <input value="updated_at" class="form-check-input" type="radio" name="flexRadioDefault" id="updated_at">
+            <label class="form-check-label" for="updated_at">
+              updated_at
+            </label>
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="form-check">
+            <input value="asc" class="form-check-input" type="radio" name="flexRadioDefault-1" id="asc">
+            <label class="form-check-label" for="asc">
+              ASC
+            </label>
+          </div>
+          <div class="form-check">
+            <input value="desc" class="form-check-input" type="radio" name="flexRadioDefault-1" id="desc" checked>
+            <label class="form-check-label" for="desc">
+              DESC
+            </label>
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="form-check">
+            <input value="1" class="form-check-input" type="radio" name="flexRadioDefault-2" id="alfa">
+            <label class="form-check-label" for="alfa">
+              Alfabético
+            </label>
+          </div>
+          <div class="form-check">
+            <input value="1" class="form-check-input" type="radio" name="flexRadioDefault-2" id="nalfa" checked>
+            <label class="form-check-label" for="nalfa">
+              Não-Alfabético
+            </label>
+          </div>
+        </div>
+        <div class="col-sm">
+          <button id="git" type="button" class="btn btn-primary" style="width: 152px;">GO!</button>
+          <button id="limpar" type="button" class="btn btn-danger">Limpar</button>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center" style="margin-top:30px;">
+      <div id="spinner" class="spinner-border" role="status" style="display: none;">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    <div id="profile" style="margin-top:15px;">
+    </div>
+  </div>
+</body>
+
+</html>
+<script>
+  $(document).ready(function () {
+    var regex = new RegExp("^[a-zA-Z0-9-Zàèìòùáéíóúâêîôûãõ\b]+$");
+    const dadosProfile = [];
+    const dadosCommits = [];
+    const dadosRepository = [];
+    const dadosSearch = [];
+    var count = 0;
+    var aux = 0;
+    var div_one;
+    var row;
+    var col_one;
+    var col_two;
+    var col_three;
+    var col_four;
+    var link;
+    var span_one;
+    var span_two;
+    var span_three;
+    var span_four;
+    var span_five;
+    var button;
+    var div_two;
+    var col_profile_one;
+    var col_profile_two;
+    var card_one;
+    var card_two;
+    var img;
+    var ul;
+    var li_one;
+    var li_two;
+    var li_three;
+    var li_four;
+    var span_six;
+    var span_seven;
+    var span_eight;
+    var span_nine;
+    var link_one;
+    var repo;
+
+    function loadProfile() {
+      const arr = [];
+
+      for (i in dadosProfile) {
+        arr.push(dadosProfile[i]);
+      };
+
+      arr.forEach(function (value, index) {
+        div_two = $('<div>').attr('id', 'row' + aux).addClass('row').css({ "margin-top": "30px" });
+
+        col_profile_one = $('<div>').addClass('col-md-4');
+        col_profile_two = $('<div>').addClass('col-md-8');
+
+        div_two.append(col_profile_one);
+        div_two.append(col_profile_two);
+
+        card_one = $('<div>').addClass('card').css({ "width": "18rem" });
+        card_two = $('<div>').addClass('card-body');
+
+        col_profile_one.append(card_one);
+
+        img = $('<img>').addClass('card-img-top').attr('src', value.avatar_url);
+        ul = $('<ul>').addClass('list-group list-group-flush');
+
+        card_one.append(img);
+        card_one.append(ul);
+        card_one.append(card_two);
+
+        li_one = $('<li>').addClass('list-group-item').html('Login: ').css({ "font-weight": "bold" });;
+        li_two = $('<li>').addClass('list-group-item').html('Repositórios: ').css({ "font-weight": "bold" });;
+        li_three = $('<li>').addClass('list-group-item').html('Seguidores: ').css({ "font-weight": "bold" });;
+        li_four = $('<li>').addClass('list-group-item').html('Seguindo: ').css({ "font-weight": "bold" });;
+
+        ul.append(li_one);
+        ul.append(li_two);
+        ul.append(li_three);
+        ul.append(li_four);
+
+        span_six = $('<span>').attr('id', 'login').html(value.login);
+        span_seven = $('<span>').addClass('badge bg-success').html(value.public_repos);
+        span_eight = $('<span>').addClass('badge bg-primary').html(value.public_repos);
+        span_nine = $('<span>').addClass('badge bg-info').html(value.public_repos);
+
+        li_one.append(span_six);
+        li_two.append(span_seven);
+        li_three.append(span_eight);
+        li_four.append(span_nine);
+
+        link_one = $('<a>').attr('href', value.html_url).attr('target', '_blank').addClass('btn btn-warning btn-block').css({ "width": "100%" }).html('Ver Perfil');
+
+        card_two.append(link_one);
+
+        repo = $('<div>').attr('id', 'repos-' + aux).addClass('repos');
+
+        col_profile_two.append(repo);
+
+        $('#profile').prepend(div_two);
+        aux++;
+      });
+      dadosProfile.length = 0;
+    }
+
+    function loadRepository(count) {
+      var uniqueRepo = [...new Map(dadosRepository[0].map((m) => [m.id, m])).values()];
+
+      uniqueRepo.forEach(function (value, index) {
+        div_one = $('<div>').attr('id', 'tag-' + index).addClass('card card-body mb-2');
+        row = $('<div>').addClass('row');
+
+        div_one.append(row);
+
+        col_one = $('<div>').attr('id', 'repo-name').addClass('col-md-6');
+
+        row.append(col_one);
+
+        link = $('<a>').attr('href', value.html_url).html(value.name).attr('target', '_blank').css({ "font-weight": "bold" });
+
+        col_one.append(link);
+
+        col_two = $('<div>').addClass('col-md-6');
+
+        row.append(col_two);
+
+        span_one = $('<span>').addClass('badge bg-success').html('Stars: ' + value.stargazers_count).css({ "margin-right": "2px" });
+        span_two = $('<span>').addClass('badge bg-primary').html('Watchers: ' + value.watchers_count).css({ "margin-right": "2px" });
+        span_three = $('<span>').addClass('badge bg-dark').html('Forks: ' + value.forks_count);
+
+        col_two.append(span_one);
+        col_two.append(span_two);
+        col_two.append(span_three);
+
+        col_three = $('<div>').addClass('col-md-6').css({ "margin-top": "10px" });
+
+        row.append(col_three);
+
+        span_four = $('<span>').addClass('badge bg-warning text-dark').html('Criado: ' + new Date(value.created_at).toLocaleString('pt-BR'));
+
+        col_three.append(span_four);
+
+        col_four = $('<div>').addClass('col-md-6').css({ "margin-top": "10px" });
+
+        row.append(col_four);
+
+        span_five = $('<span>').addClass('badge bg-info text-dark').html('Atualizado: ' + new Date(value.updated_at).toLocaleString('pt-BR'));
+
+        button = $('<button>').attr('id', 'commits').addClass('btn btn-sm btn-success').text('Commits').css({ "margin-left": "99px", "position": "relative", "top": "-19px" });
+
+        col_four.append(span_five);
+        col_four.append(button);
+
+        $('#repos-' + count).append(div_one);
+      });
+      dadosRepository.length = 0;
+    }
+
+    function loadRepositories() {
+      dadosSearch[0].forEach(function (value, index) {
+        div_one = $('<div>').attr('id', 'tag-' + index).addClass('card card-body mb-2');
+        row = $('<div>').addClass('row');
+
+        div_one.append(row);
+
+        col_one = $('<div>').attr('id', 'repo-name').addClass('col-md-6');
+
+        row.append(col_one);
+
+        link = $('<a>').attr('href', value.html_url).html(value.name).attr('target', '_blank').css({ "font-weight": "bold" });
+
+        col_one.append(link);
+
+        col_ghost = $('<div>').addClass('col-md-6');
+
+        row.append(col_ghost);
+
+        span_five = $('<span>').addClass('badge bg-dark').html('Owner:  ' + value.owner.login)
+
+        col_ghost.append(span_five);
+
+        col_two = $('<div>').addClass('col-md-6').css({ "margin-top": "15px" });;
+
+        row.append(col_two);
+
+        span_four = $('<span>').addClass('badge bg-warning text-dark').html('Criado: ' + new Date(value.created_at).toLocaleString('pt-BR'));
+
+        col_two.append(span_four);
+
+        col_three = $('<div>').addClass('col-md-6').css({ "margin-top": "15px" });;
+
+        row.append(col_three);
+
+        span_one = $('<span>').addClass('badge bg-success').html('Stars: ' + value.stargazers_count).css({ "margin-right": "2px" });
+        span_two = $('<span>').addClass('badge bg-primary').html('Watchers: ' + value.watchers_count).css({ "margin-right": "2px" });
+        span_three = $('<span>').addClass('badge bg-danger').html('Forks: ' + value.forks_count);
+
+        col_three.append(span_one);
+        col_three.append(span_two);
+        col_three.append(span_three);
+
+        col_four = $('<div>').addClass('col-md-6');
+
+        row.append(col_four);
+
+        span_five = $('<span>').addClass('badge bg-info text-dark').html('Atualizado: ' + new Date(value.updated_at).toLocaleString('pt-BR'));
+
+        col_four.append(span_five);
+
+        col_five = $('<div>').addClass('col-md-6').css({ "padding-left": "431px" });
+
+        row.append(col_five);
+
+        button = $('<button>').attr('id', 'commits').addClass('btn btn-sm btn-success').text('Commits').css({ "margin-top": "10px" });
+
+        col_five.append(button);
+
+        $('#profile').append(div_one);
+      });
+      dadosSearch.length = 0;
+    }
+
+    $('#search').on('keyup', function (e) {
+      $('.spinner-border').show();
+      $('#search-repository').val('');
+      $('#created_at').prop('checked', true);
+      $('#git, #limpar').attr('disabled', true);
+      $('#profile').empty();
+      var nome = e.target.value;
+      var qtd = $('#quantidade').val();
+      var order;
+      var arg;
+      validate(nome, regex, order, arg, qtd);
+    });
+
+    $('#search-repository').on('keyup', function (e) {
+      $('.spinner-border').show();
+      $('#updated_at').prop('checked', true);
+      $('#search').val('');
+      $('#git, #limpar').attr('disabled', true);
+      $('#profile').empty();
+      var nome = e.target.value;
+      var qtd = $('#quantidade').val();
+      var order;
+      var arg;
+      validate(nome, regex, order, arg, qtd, true);
+    });
+
+    $('#limpar').on('click', function () {
+      $('#profile').empty();
+    });
+
+    $('#git').on('click', function () {
+      $('.spinner-border').show();
+      $('#profile').empty();
+      var nome = $('#search').val() == '' ? $('#search-repository').val() : $('#search').val();
+      var qtd = $('#quantidade').val();
+      var order;
+      var arg;
+
+      if($('#search-repository').val() != '') {
+        validate(nome, regex, order, arg, qtd, true);
+      } else {
+        validate(nome, regex, order, arg, qtd);
+      }
+    });
+
+    function getRepo(nome, quantidade, arg, order) {
+      $.get("/repo", { repositorio: nome, qtd: quantidade, arg: arg, order: order }, function (data, status, xhr) {
+
+        if (data.status == '404') {
+          $(".alert-warning").show();
+
+          setTimeout(function () {
+            $(".alert-warning").hide();
+          }, 3000);
+        }
+
+        if (data.status == '200') {
+          if ($('#alfa').prop('checked') == true) {
+            var sorted = data.json.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1))
+            dadosRepository.push(sorted);
+          } else {
+            dadosRepository.push(data.json);
+          }
+          loadRepository(count);
+          count++;
+        }
+      });
+    }
+
+    function searchRepo(nome, quantidade, arg, order) {
+      $.get("/search", { repositorio: nome, qtd: quantidade, arg: arg, order: order }, function (data, status) {
+        if ($('#alfa').prop('checked') == true) {
+          var sorted = data.items.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1))
+          dadosSearch.push(sorted);
+        } else {
+          dadosSearch.push(data.items);
+        }
+        loadRepositories();
+      });
+    }
+
+    function getProfile(nome) {
+      $.get("/profile", { repositorio: nome }, function (data, status, xhr) {
+        if (data.status == '404') {
+          $(".alert-warning").show();
+
+          setTimeout(function () {
+            $(".alert-warning").hide();
+          }, 5000);
+        }
+
+        if(data.status == '200') {
+          dadosProfile.push(data.json);
+          loadProfile();
+        }
+      });
+    }
+
+    function validate(nome, regex, order, arg, qtd, search = false) {
+      $('#git, #limpar').attr('disabled', true);
+
+      if ($('#asc').prop('checked') == true) {
+        order = $('#asc').val();
+      } else {
+        order = $('#desc').val();
+      }
+
+      if ($('#created_at').prop('checked') == true) {
+        arg = $('#created_at').val();
+      } else {
+        arg = $('#updated_at').val();
+      }
+
+      if (/^\s/.test(nome) || !regex.test(nome)) {
+        nome = '';
+        $(".alert alert-danger").show();
+        setTimeout(function () {
+          $(".alert alert-danger").hide();
+        }, 3000);
+        $('.spinner-border').hide();
+        return false;
+      }
+
+      if (nome === '' || nome === undefined) {
+        return false;
+      }
+
+      var self = this;
+      if (self.timer)
+        clearTimeout(self.timer);
+
+      self.timer = setTimeout(function () {
+        self.timer = null;
+
+        if (search) {
+          searchRepo(nome, qtd, 'updated', order);
+        } else {
+          getProfile(nome);
+          getRepo(nome, qtd, arg, order);
+        }
+        $('.spinner-border').hide();
+        $('#git, #limpar').attr('disabled', false);
+      }, 1000);
+    }
+
+    $(document).on('click', '#commits', function (params) {
+      $('.spinner-border').show();
+      var row = $(this).parents()[1];
+      var div = $(row).children()[0];
+
+      var owner = $(row).children()[1];
+      var owner_text = $(owner).text();
+      var owner_name = owner_text.substring(owner_text.length, 6);
+
+      var name = $(div).text();
+
+      var login = $('li:first-child').text();
+
+      var user = login === '' ? owner_name : login.substring(login.length, 7);
+
+      var qtd = $('#quantidade').val();
+
+      if ($('#created_at').prop('checked') == true) {
+        arg = 'author-date';
+      } else {
+        arg = 'committer-date';
+      }
+
+      if ($('#asc').prop('checked') == true) {
+        order = $('#asc').val();
+      } else {
+        order = $('#desc').val();
+      }
+
+      $.get("/commits", { repositorio: name, login: user.trim(), qtd: qtd, arg: arg, order: order}, function (data, status) {
+        if (data.status == '404') {
+          $(".alert-warning").show();
+
+          setTimeout(function () {
+            $(".alert-warning").hide();
+          }, 5000);
+        }
+
+        if(data.status == '200') {
+          dadosCommits.push(data.json);
+          $('#profile').empty();
+          loadCommits();
+        }
+        $('.spinner-border').hide();
+      });
+    });
+
+    function loadCommits() {
+      const commits = [];
+
+      for (i in dadosCommits) {
+        commits.push(dadosCommits[i]);
+      };
+
+      commits[0].forEach(function (value, index) {
+        div_one = $('<div>').attr('id', 'tag-' + index).addClass('card card-body mb-2');
+        row = $('<div>').addClass('row');
+
+        div_one.append(row);
+
+        col_one = $('<div>').attr('id', 'repo-name').addClass('col-md-6');
+
+        row.append(col_one);
+
+        link = $('<a>').attr('href', value.html_url).html(value.sha).attr('target', '_blank').css({ "font-weight": "bold" });
+
+        col_one.append(link);
+
+        col_two = $('<div>').addClass('col-md-6');
+
+        row.append(col_two);
+
+        span_one = $('<span>').addClass('badge bg-success').html('Autor: ' + value.commit.author.name).css({ "margin-right": "2px" });
+        span_two = $('<span>').addClass('badge bg-secondary').html('E-mail: ' + value.commit.author.email).css({ "margin-right": "2px" });
+        span_three = $('<span>').addClass('badge bg-dark').html('Data: ' + new Date(value.commit.author.date).toLocaleString('pt-BR'));
+
+        col_two.append(span_one);
+        col_two.append(span_two);
+        col_two.append(span_three);
+
+        col_three = $('<div>').addClass('col-md-6').css({ "margin-top": "10px" });
+
+        row.append(col_three);
+
+        span_four = $('<textarea>').addClass('form-control').prop('disabled', true).prop('rows', 3).html('Mensagem: ' + value.commit.message);
+
+        col_three.append(span_four);
+
+        col_four = $('<div>').addClass('col-md-6').css({ "margin-top": "10px" });
+
+        row.append(col_four);
+
+        span_five = $('<span>').addClass('badge bg-info text-dark').html('Comentários: ' + value.commit.comment_count);
+
+        col_four.append(span_five);
+
+        $('#profile').append(div_one);
+      });
+      dadosCommits.length = 0;
+    }
+  });
+</script>
