@@ -28,7 +28,7 @@ app.get('/profile', async function(req, res) {
       'Authorization': `token ${client_secret}`
     }
   };
-  await axios.get(`https://api.github.com/users/${req.query.repositorio}`, config)
+  await axios.get(`https://api.github.com/users/${req.query.repositorio}`)
   .then(async function (response) {
     return res.json({status: response.status, json: response.data});
   })
@@ -44,7 +44,7 @@ app.get('/repo', async function(req, res) {
       'Authorization': `token ${client_secret}`
     }
   };
-  await axios.get(`https://api.github.com/users/${req.query.repositorio}/repos?per_page=${req.query.qtd}&sort=${req.query.arg}&direction=${req.query.order}`, config)
+  await axios.get(`https://api.github.com/users/${req.query.repositorio}/repos?per_page=${req.query.qtd}&sort=${req.query.arg}&direction=${req.query.order}`)
   .then(async function (response) {
     return res.json({status: response.status, json: response.data});
   })
@@ -61,12 +61,12 @@ app.get('/search', async function(req, res) {
     }
   };
 
-  await axios.get(`https://api.github.com/search/repositories?q=${req.query.repositorio}&per_page=${req.query.qtd}&sort=${req.query.arg}&direction=${req.query.order}`, config)
+  await axios.get(`https://api.github.com/search/repositories?q=${req.query.repositorio}&per_page=${req.query.qtd}&sort=${req.query.arg}&direction=${req.query.order}`)
   .then(async function (response) {
     return res.json(response.data);
   })
   .catch(function (error) {
-    return res.json({msg: 'Repositório não encontrado! ' + error + config});
+    return res.json({msg: 'Repositório não encontrado! ' + error});
   });
 
 });
@@ -78,7 +78,7 @@ app.get('/commits', async function(req, res) {
     }
   };
 
-  await axios.get(`https://api.github.com/repos/${req.query.login}/${req.query.repositorio}/commits?per_page=${req.query.qtd}&sort=${req.query.arg}&direction=${req.query.order}`, config)
+  await axios.get(`https://api.github.com/repos/${req.query.login}/${req.query.repositorio}/commits?per_page=${req.query.qtd}&sort=${req.query.arg}&direction=${req.query.order}`)
   .then(async function (response) {
     return res.json({status: response.status, json: response.data});
   })
