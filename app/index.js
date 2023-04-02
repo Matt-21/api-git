@@ -3,7 +3,7 @@ const axios = require('axios');
 const path = require('path');
 
 const app = express();
-const client_secret = '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';
+const client_secret = '';
 
 app.use(express.json());
 app.use(express.urlencoded());
